@@ -1,7 +1,7 @@
 {
-  "name": "gatsby-plugin-bch-tx-history",
+  "name": "gatsby-plugin-bch-sweep",
   "version": "1.0.0",
-  "description": "Gatsby Plugin to display TX History in bch-wallet-starter",
+  "description": "Gatsby Plugin to sweep BCH and tokens",
   "main": "index.js",
   "scripts": {
     "test": "npm run lint",
