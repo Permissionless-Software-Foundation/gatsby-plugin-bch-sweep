@@ -1,0 +1,32 @@
+{
+  "name": "gatsby-plugin-bch-tx-history",
+  "version": "1.0.0",
+  "description": "Gatsby Plugin to display TX History in bch-wallet-starter",
+  "main": "index.js",
+  "scripts": {
+    "test": "npm run lint",
+    "build": "echo \"No build script setup\"",
+    "lint": "standard --env mocha --fix"
+  },
+  "keywords": [
+    "gatsby",
+    "gatsby-plugin"
+  ],
+  "author": "Chris Troutner <chris.troutner@gmail.com>",
+  "license": "MIT",
+  "devDependencies": {
+    "semantic-release": "^17.1.1",
+    "standard": "^14.3.4"
+  },
+  "release": {
+    "publish": [
+      {
+        "path": "@semantic-release/npm",
+        "npmPublish": true
+      }
+    ]
+  },
+  "dependencies": {
+    "adminlte-2-react": "^0.1.27"
+  }
+}
