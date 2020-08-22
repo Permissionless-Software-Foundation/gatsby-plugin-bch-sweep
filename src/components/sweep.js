@@ -87,8 +87,10 @@ class Sweep extends Component {
     })
   }
 }
+
 Sweep.propTypes = {
   onError: PropTypes.func,
   onScan: PropTypes.func
 }
+
 export default Sweep
