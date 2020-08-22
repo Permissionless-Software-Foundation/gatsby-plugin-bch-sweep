@@ -7,7 +7,7 @@
 
 import React from 'react'
 import { Sidebar } from 'adminlte-2-react'
-import Sweep from '../../Sweep'
+import Sweep from '../../sweep'
 
 const { Item } = Sidebar
 

@@ -1,6 +1,7 @@
 import React, { Component } from 'react'
 import PropTypes from 'prop-types'
-import './qr-scanner.css'
+// import './qr-scanner.css'
+import 'gatsby-ipfs-web-wallet/src/components/qr-scanner/qr-scanner.css'
 import QrReader from 'react-qr-reader'
 
 let _this
