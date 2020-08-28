@@ -7,7 +7,7 @@
 
 import React from 'react'
 import { Sidebar } from 'adminlte-2-react'
-import Sweep from '../../sweep'
+import Sweep from '../../components/sweep'
 
 const { Item } = Sidebar
 
@@ -17,7 +17,7 @@ menuComponents.push(
   {
     key: 'Sweep',
     component: <Sweep />,
-    menuItem: <Item icon='fas-cog' key='Sweep' text='Sweep' />
+    menuItem: <Item icon='fas-arrow-circle-up' key='Sweep' text='Sweep' />
   }
 )
 

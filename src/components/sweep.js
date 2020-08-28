@@ -1,7 +1,8 @@
 import React, { Component } from 'react'
 import PropTypes from 'prop-types'
-// import './qr-scanner.css'
+import { Content, Row, Col, Box, Button  } from 'adminlte-2-react'
 import 'gatsby-ipfs-web-wallet/src/components/qr-scanner/qr-scanner.css'
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import QrReader from 'react-qr-reader'
 
 let _this
@@ -12,7 +13,7 @@ class Sweep extends Component {
     _this = this
 
     this.state = {
-      success: 'No Result',
+      success: false,
       facingMode: 'environment',
       isSweeping: false
     }
@@ -48,36 +49,53 @@ class Sweep extends Component {
 
   render () {
     return (
-      <div className='QRScanner-container'>
-        {!this.state.isSweeping && !this.state.success && (
-          <div>
-            <h3>Sweep Paper Wallet</h3>
-            <h4>Facing Mode: {_this.state.facingMode}</h4>
-            <button className='change-button' onClick={_this.handleChangeMode}>
-              Change
-            </button>
-            <QrReader
-              delay={300}
-              onError={this.handleError}
-              onScan={this.handleScan}
-              facingMode={_this.state.facingMode}
-            />
-            <b>
-              <p className='qr-result'>{this.state.success}</p>
-            </b>
-          </div>
-        )}
-        {this.state.success && (
-          <div className='QRScanner-container'>
-            <h3>Sweeping complete. Check your balance and your tokens.</h3>
-          </div>
-        )}
-        {this.state.isSweeping && (
-          <div className='QRScanner-container'>
-            <h3>Sweeping...</h3>
-          </div>
-        )}
-      </div>
+      <Content>
+         <Row>
+          <Col sm={3} />
+          <Col sm={6}>
+                 <Box
+                  className='hover-shadow border-none mt-2'
+                >
+            {!this.state.isSweeping && !this.state.success && (
+              <>
+                <Row>
+                <Col sm={12} className='text-center'>
+                  <h1>
+                    <FontAwesomeIcon
+                      className='title-icon'
+                      size='xs'
+                      icon='arrow-circle-up'
+                    />
+                    <span>Sweep Wallet</span>
+                  </h1>
+                <QrReader
+                  delay={300}
+                  onError={this.handleError}
+                  onScan={this.handleScan}
+                  facingMode={_this.state.facingMode}
+                />
+                <b>
+                  <p className='qr-result'>{this.state.success}</p>
+                </b>
+                 </Col>
+               </Row>
+              </>
+            )}
+            {this.state.success && (
+              <div className='QRScanner-container'>
+                <h3>Sweeping complete. Check your balance and your tokens.</h3>
+              </div>
+            )}
+            {this.state.isSweeping && (
+              <div className='QRScanner-container'>
+                <h3>Sweeping...</h3>
+              </div>
+            )}
+             </Box>
+          </Col>
+          <Col sm={3} />
+       </Row>
+      </Content>
     )
   }
 
