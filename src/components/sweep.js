@@ -18,6 +18,10 @@ class Sweep extends Component {
       isSweeping: false
     }
 
+    // The library QrReader calls to the scan function constantly, 
+    // sending null as a parameter if it does not read anything, 
+    // so it's advisable to insert code inside a validation
+    
     /* TODO: Integrate with npm library to sweep tokens */
     this.handleScan = async data => {
       //
