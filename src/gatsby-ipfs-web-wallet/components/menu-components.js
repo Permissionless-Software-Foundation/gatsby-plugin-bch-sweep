@@ -16,7 +16,7 @@ const menuComponents = []
 menuComponents.push(
   {
     key: 'Sweep',
-    component: <Sweep />,
+    component: <Sweep key="Sweep" />,
     menuItem: <Item icon='fas-arrow-circle-up' key='Sweep' text='Sweep' />
   }
 )
