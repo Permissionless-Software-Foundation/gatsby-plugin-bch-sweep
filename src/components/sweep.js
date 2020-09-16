@@ -18,9 +18,13 @@ class Sweep extends Component {
       isSweeping: false
     }
 
+    // The library QrReader calls to the scan function constantly, 
+    // sending null as a parameter if it does not read anything, 
+    // so it's advisable to insert code inside a validation
+    
     /* TODO: Integrate with npm library to sweep tokens */
     this.handleScan = async data => {
-      this.setState({ isSweeping: true })
+      //
       //   const bchjs = new BCHJS({ restURL: FULLSTACK_MAINNET_API_FREE })
       //   const rootSeed = await bchjs.Mnemonic.toSeed('scorpion like ten total bean venture boring discover half myself survey miss')
       //   const masterHDNode = bchjs.HDNode.fromSeed(rootSeed)
@@ -33,10 +37,17 @@ class Sweep extends Component {
       //   await slpSweeper.build()
       //   await slpSweeper.sweepTo(SlpAddress, BchAddress)
       // })()
-      this.setState({ isSweeping: false })
+      // this.setState({ isSweeping: false })
       if (data) {
+        console.log(`Scanned data : ${data}`)
+        this.setState({ isSweeping: true })
+        /*
+        *
+        *  Sweeping
+        */
         this.setState({
-          success: true
+          success: true,
+          isSweeping: false
         })
       }
     }
