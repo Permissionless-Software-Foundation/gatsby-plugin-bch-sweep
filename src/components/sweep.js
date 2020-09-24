@@ -1,10 +1,12 @@
 import React, { Component } from 'react'
 import PropTypes from 'prop-types'
-import { Content, Row, Col, Box } from 'adminlte-2-react'
+import { Content, Row, Col, Box, Button } from 'adminlte-2-react'
 import 'gatsby-ipfs-web-wallet/src/components/qr-scanner/qr-scanner.css'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import QrReader from 'react-qr-reader'
+import { getWalletInfo } from 'gatsby-ipfs-web-wallet/src/components/localWallet'
 
+import './sweep.css'
 let _this
 
 class Sweep extends Component {
@@ -15,40 +17,44 @@ class Sweep extends Component {
     this.state = {
       success: false,
       facingMode: 'environment',
-      isSweeping: false
+      isSweeping: false,
+      txId: '',
+      errMsg: ''
     }
 
-    // The library QrReader calls to the scan function constantly, 
-    // sending null as a parameter if it does not read anything, 
+    // The library QrReader calls to the scan function constantly,
+    // sending null as a parameter if it does not read anything,
     // so it's advisable to insert code inside a validation
-    
+
     /* TODO: Integrate with npm library to sweep tokens */
     this.handleScan = async data => {
-      //
-      //   const bchjs = new BCHJS({ restURL: FULLSTACK_MAINNET_API_FREE })
-      //   const rootSeed = await bchjs.Mnemonic.toSeed('scorpion like ten total bean venture boring discover half myself survey miss')
-      //   const masterHDNode = bchjs.HDNode.fromSeed(rootSeed)
-      //   const account = bchjs.HDNode.derivePath(masterHDNode, "m/44'/145'/0'")
-      //   const change = bchjs.HDNode.derivePath(account, '0/0')
-      //   const ECPair = bchjs.HDNode.toKeyPair(change)
-      //   const wifFromReceiver = bchjs.ECPair.toWIF(ECPair)
-
-      //   const slpSweeper = new SLPSweeper(wifFromReceiverPaper, wifFromReceiver)
-      //   await slpSweeper.build()
-      //   await slpSweeper.sweepTo(SlpAddress, BchAddress)
-      // })()
-      // this.setState({ isSweeping: false })
       if (data) {
-        console.log(`Scanned data : ${data}`)
-        this.setState({ isSweeping: true })
-        /*
-        *
-        *  Sweeping
-        */
-        this.setState({
-          success: true,
-          isSweeping: false
-        })
+        try {
+          console.log(`Scanned data : ${data}`)
+
+          // Validate Input
+          const isWIF = _this.validateWIF(data)
+          if (!isWIF) { throw new Error('Not a WIF key') }
+
+          _this.setState({ isSweeping: true })
+
+          // Sweep start!
+          const result = await _this.handleSweep(data)
+
+          if (!result) throw new Error('Error making the sweep')
+
+          _this.setState({
+            success: true,
+            isSweeping: false,
+            txId: result
+          })
+        } catch (error) {
+          _this.setState({
+            success: false,
+            isSweeping: false,
+            errMsg: error.message
+          })
+        }
       }
     }
 
@@ -60,53 +66,86 @@ class Sweep extends Component {
 
   render () {
     return (
-      <Content>
-        <Row>
-          <Col sm={3} />
-          <Col sm={6}>
-            <Box className='hover-shadow border-none mt-2'>
-              {!this.state.isSweeping && !this.state.success && (
-                <>
-                  <Row>
-                    <Col sm={12} className='text-center'>
-                      <h1>
-                        <FontAwesomeIcon
-                          className='title-icon'
-                          size='xs'
-                          icon='arrow-circle-up'
+      <>
+        <Content>
+          <Row>
+            <Col sm={3} />
+            <Col sm={_this.state.txId ? 12 : 6}>
+              <Box className='hover-shadow border-none mt-2'>
+                {!_this.state.isSweeping && !_this.state.success && !_this.state.errMsg && (
+                  <>
+                    <Row>
+                      <Col sm={12} className='text-center'>
+                        <h1>
+                          <FontAwesomeIcon
+                            className='title-icon'
+                            size='xs'
+                            icon='arrow-circle-up'
+                          />
+                          <span>Sweep Wallet</span>
+                        </h1>
+                        <QrReader
+                          delay={300}
+                          onError={_this.handleError}
+                          onScan={_this.handleScan}
+                          facingMode={_this.state.facingMode}
                         />
-                        <span>Sweep Wallet</span>
-                      </h1>
-                      <QrReader
-                        delay={300}
-                        onError={this.handleError}
-                        onScan={this.handleScan}
-                        facingMode={_this.state.facingMode}
+                        <b>
+                          <p className='qr-result'>{_this.state.success}</p>
+                        </b>
+                      </Col>
+                    </Row>
+                  </>
+                )}
+                {_this.state.success && (
+                  <div className='text-center'>
+                    <h3>
+                      Sweeping complete. Check your balance and your tokens.
+                    </h3>
+                    <p className='mt-2'>
+                      Transaction ID :
+                      <a
+                        href={`https://explorer.bitcoin.com/bch/tx/${_this.state.txId}`}
+                        target='_blank' rel='noopener noreferrer'
+                      > {_this.state.txId}
+                      </a>
+                    </p>
+
+                    <Button
+                      text='Back'
+                      className='btn-primary mt-2'
+                      style={{ color: 'white' }}
+                      onClick={_this.handleResetState}
+                    />
+                  </div>
+                )}
+                {_this.state.errMsg && (
+                  <>
+                    <div className='text-center'>
+                      <h3 className='error-color'>
+                        {this.state.errMsg}
+                      </h3>
+                      <Button
+                        text='Back'
+                        className='btn-primary mt-2'
+                        onClick={_this.handleResetState}
                       />
-                      <b>
-                        <p className='qr-result'>{this.state.success}</p>
-                      </b>
-                    </Col>
-                  </Row>
-                </>
-              )}
-              {this.state.success && (
-                <div className='QRScanner-container'>
-                  <h3>
-                    Sweeping complete. Check your balance and your tokens.
-                  </h3>
-                </div>
-              )}
-              {this.state.isSweeping && (
-                <div className='QRScanner-container'>
-                  <h3>Sweeping...</h3>
-                </div>
-              )}
-            </Box>
-          </Col>
-          <Col sm={3} />
-        </Row>
-      </Content>
+                    </div>
+
+                  </>
+                )}
+
+                {_this.state.isSweeping && (
+                  <div className='QRScanner-container'>
+                    <h3>Sweeping...</h3>
+                  </div>
+                )}
+              </Box>
+            </Col>
+            <Col sm={3} />
+          </Row>
+        </Content>
+      </>
     )
   }
 
@@ -115,6 +154,58 @@ class Sweep extends Component {
     _this.setState({
       facingMode: mode
     })
+  }
+
+  async handleSweep (paperWIF) {
+    try {
+      // Get Wallet Info
+      const walletInfo = getWalletInfo()
+      const slpAddress = walletInfo.slpAddress
+      const WIFFromReceiver = walletInfo.privateKey
+
+      if (!slpAddress || !WIFFromReceiver) { throw new Error('You need to have a registered wallet to make a token sweep') }
+
+      // Importing library
+      const SweeperLib =
+        typeof window !== 'undefined'
+          ? window.Sweep
+          : null
+      if (!SweeperLib) throw new Error('Sweeper Library not found')
+
+      // Instancing the library
+      const sweeperLib = new SweeperLib(paperWIF, WIFFromReceiver)
+      await sweeperLib.populateObjectFromNetwork()
+
+      // Constructing the sweep transaction
+      const transactionHex = await sweeperLib.sweepTo(slpAddress)
+
+      // Broadcast the transaction to the network.
+      const txId = await sweeperLib.broadcast(transactionHex)
+      return txId
+    } catch (error) {
+      console.error(error)
+      throw error
+    }
+  }
+
+  handleResetState () {
+    _this.setState({
+      success: false,
+      facingMode: 'environment',
+      isSweeping: false,
+      txId: '',
+      errMsg: ''
+    })
+  }
+
+  validateWIF (WIF) {
+    if (typeof WIF !== 'string') { return false }
+
+    if (WIF.length !== 52) { return false }
+
+    if (WIF[0] !== 'L' && WIF[0] !== 'K') { return false }
+
+    return true
   }
 }
 
