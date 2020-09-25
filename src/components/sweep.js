@@ -192,13 +192,12 @@ class Sweep extends Component {
       // )
 
       // Extract the token IDs held by the apper wallet.
-      const ids = sweeperLib.UTXOsFromPaperWallet.tokenUTXOs.map(x => x.tokenId);
+      const ids = sweeperLib.UTXOsFromPaperWallet.tokenUTXOs.map(x => x.tokenId)
 
       // Get the unique IDs
-      const uniqueIds = uniq(ids)
+      const uniqueIds = this.uniq(ids)
 
-      if(uniqueIds.length > 1)
-        throw new Error('More than 1 token class on the paper wallet. The wallet can not handle that yet!')
+      if (uniqueIds.length > 1) { throw new Error('More than 1 token class on the paper wallet. The wallet can not handle that yet!') }
 
       // Constructing the sweep transaction
       const transactionHex = await sweeperLib.sweepTo(slpAddress)
@@ -214,11 +213,10 @@ class Sweep extends Component {
     }
   }
 
-
-  function uniq(a) {
-      return a.sort().filter(function(item, pos, ary) {
-          return !pos || item != ary[pos - 1];
-      });
+  uniq (a) {
+    return a.sort().filter(function (item, pos, ary) {
+      return !pos || item != ary[pos - 1]
+    })
   }
 
   handleResetState () {
