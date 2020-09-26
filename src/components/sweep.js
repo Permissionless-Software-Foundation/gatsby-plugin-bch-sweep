@@ -12,7 +12,7 @@ import './sweep.css'
 let _this
 
 class Sweep extends Component {
-  constructor (props) {
+  constructor(props) {
     super(props)
     _this = this
 
@@ -68,7 +68,7 @@ class Sweep extends Component {
     }
   }
 
-  render () {
+  render() {
     return (
       <>
         <Content>
@@ -79,30 +79,30 @@ class Sweep extends Component {
                 {!_this.state.isSweeping &&
                   !_this.state.success &&
                   !_this.state.errMsg && (
-                  <div>
-                    <Row>
-                      <Col sm={12} className="text-center">
-                        <h1>
-                          <FontAwesomeIcon
-                            className="title-icon"
-                            size="xs"
-                            icon="arrow-circle-up"
+                    <div>
+                      <Row>
+                        <Col sm={12} className="text-center">
+                          <h1>
+                            <FontAwesomeIcon
+                              className="title-icon"
+                              size="xs"
+                              icon="arrow-circle-up"
+                            />
+                            <span>Sweep Wallet</span>
+                          </h1>
+                          <QrReader
+                            delay={300}
+                            onError={_this.handleError}
+                            onScan={_this.handleScan}
+                            facingMode={_this.state.facingMode}
                           />
-                          <span>Sweep Wallet</span>
-                        </h1>
-                        <QrReader
-                          delay={300}
-                          onError={_this.handleError}
-                          onScan={_this.handleScan}
-                          facingMode={_this.state.facingMode}
-                        />
-                        <b>
-                          <p className="qr-result">{_this.state.success}</p>
-                        </b>
-                      </Col>
-                    </Row>
-                  </div>
-                )}
+                          <b>
+                            <p className="qr-result">{_this.state.success}</p>
+                          </b>
+                        </Col>
+                      </Row>
+                    </div>
+                  )}
                 {_this.state.success && (
                   <div className="text-center">
                     <h3>
@@ -157,14 +157,14 @@ class Sweep extends Component {
     )
   }
 
-  handleChangeMode () {
+  handleChangeMode() {
     const mode = _this.state.facingMode === 'user' ? 'environment' : 'user'
     _this.setState({
       facingMode: mode
     })
   }
 
-  async handleSweep (paperWIF) {
+  async handleSweep(paperWIF) {
     try {
       // Get Wallet Info
       const walletInfo = getWalletInfo()
@@ -193,16 +193,20 @@ class Sweep extends Component {
       //   )}`
       // )
 
-      // Extract the token IDs held by the apper wallet.
-      const ids = sweeperLib.UTXOsFromPaperWallet.tokenUTXOs.map(x => x.tokenId)
-
-      // Get the unique IDs
-      const uniqueIds = this.uniq(ids)
-
-      if (uniqueIds.length > 1) {
-        throw new Error(
-          'More than 1 token class on the paper wallet. The wallet can not handle that yet!'
+      if (sweeperLib.UTXOsFromPaperWallet.tokenUTXOs.length > 0) {
+        // Extract the token IDs held by the apper wallet.
+        const ids = sweeperLib.UTXOsFromPaperWallet.tokenUTXOs.map(
+          x => x.tokenId
         )
+
+        // Get the unique IDs
+        const uniqueIds = this.uniq(ids)
+
+        if (uniqueIds.length > 1) {
+          throw new Error(
+            'More than 1 token class on the paper wallet. The wallet can not handle that yet!'
+          )
+        }
       }
 
       // Constructing the sweep transaction
@@ -219,13 +223,13 @@ class Sweep extends Component {
     }
   }
 
-  uniq (a) {
-    return a.sort().filter(function (item, pos, ary) {
+  uniq(a) {
+    return a.sort().filter(function(item, pos, ary) {
       return !pos || item !== ary[pos - 1]
     })
   }
 
-  handleResetState () {
+  handleResetState() {
     _this.setState({
       success: false,
       facingMode: 'environment',
@@ -235,7 +239,7 @@ class Sweep extends Component {
     })
   }
 
-  validateWIF (WIF) {
+  validateWIF(WIF) {
     if (typeof WIF !== 'string') {
       return false
     }
