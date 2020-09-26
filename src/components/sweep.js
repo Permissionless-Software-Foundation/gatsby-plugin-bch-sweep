@@ -1,3 +1,5 @@
+/* eslint-disable */
+
 import React, { Component } from 'react'
 import PropTypes from 'prop-types'
 import { Content, Row, Col, Box, Button } from 'adminlte-2-react'
@@ -77,7 +79,7 @@ class Sweep extends Component {
                 {!_this.state.isSweeping &&
                   !_this.state.success &&
                   !_this.state.errMsg && (
-                  <>
+                  <div>
                     <Row>
                       <Col sm={12} className="text-center">
                         <h1>
@@ -99,7 +101,7 @@ class Sweep extends Component {
                         </b>
                       </Col>
                     </Row>
-                  </>
+                  </div>
                 )}
                 {_this.state.success && (
                   <div className="text-center">
@@ -197,7 +199,11 @@ class Sweep extends Component {
       // Get the unique IDs
       const uniqueIds = this.uniq(ids)
 
-      if (uniqueIds.length > 1) { throw new Error('More than 1 token class on the paper wallet. The wallet can not handle that yet!') }
+      if (uniqueIds.length > 1) {
+        throw new Error(
+          'More than 1 token class on the paper wallet. The wallet can not handle that yet!'
+        )
+      }
 
       // Constructing the sweep transaction
       const transactionHex = await sweeperLib.sweepTo(slpAddress)
@@ -215,7 +221,7 @@ class Sweep extends Component {
 
   uniq (a) {
     return a.sort().filter(function (item, pos, ary) {
-      return !pos || item != ary[pos - 1]
+      return !pos || item !== ary[pos - 1]
     })
   }
 
