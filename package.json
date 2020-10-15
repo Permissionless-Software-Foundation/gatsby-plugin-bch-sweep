@@ -13,6 +13,10 @@
     "gatsby-plugin"
   ],
   "author": "Chris Troutner <chris.troutner@gmail.com>",
+  "contributors": [
+    "Daniel Gonzalez <danielhumgon@gmail.com>",
+    "Andre Cabrera <andrecabrera@protonmail.ch>"
+  ],
   "license": "MIT",
   "devDependencies": {
     "semantic-release": "^17.1.1",

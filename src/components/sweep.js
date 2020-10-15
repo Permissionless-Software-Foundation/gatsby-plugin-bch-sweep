@@ -106,7 +106,8 @@ class Sweep extends Component {
                 {_this.state.success && (
                   <div className="text-center">
                     <h3>
-                      Sweeping complete. Check your balance and your tokens.
+                      Sweeping complete. Check your balance and your tokens.<br />
+                      If you have multiple types of tokens on the paper wallet, you'll need to scan it again.
                     </h3>
                     <p className="mt-2">
                       Transaction ID :
@@ -193,29 +194,13 @@ class Sweep extends Component {
       //   )}`
       // )
 
-      if (sweeperLib.UTXOsFromPaperWallet.tokenUTXOs.length > 0) {
-        // Extract the token IDs held by the apper wallet.
-        const ids = sweeperLib.UTXOsFromPaperWallet.tokenUTXOs.map(
-          x => x.tokenId
-        )
-
-        // Get the unique IDs
-        const uniqueIds = this.uniq(ids)
-
-        if (uniqueIds.length > 1) {
-          throw new Error(
-            'More than 1 token class on the paper wallet. The wallet can not handle that yet!'
-          )
-        }
-      }
-
       // Constructing the sweep transaction
       const transactionHex = await sweeperLib.sweepTo(slpAddress)
 
       // return transactionHex
 
       // Broadcast the transaction to the network.
-      const txId = await sweeperLib.broadcast(transactionHex)
+      const txId = await sweeperLib.blockchain.broadcast(transactionHex)
       return txId
     } catch (error) {
       console.error(error)
