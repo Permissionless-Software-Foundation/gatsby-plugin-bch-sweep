@@ -215,7 +215,7 @@ class Sweep extends Component {
       // return transactionHex
 
       // Broadcast the transaction to the network.
-      const txId = await sweeperLib.broadcast(transactionHex)
+      const txId = await sweeperLib.blockchain.broadcast(transactionHex)
       return txId
     } catch (error) {
       console.error(error)
