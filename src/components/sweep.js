@@ -106,7 +106,8 @@ class Sweep extends Component {
                 {_this.state.success && (
                   <div className="text-center">
                     <h3>
-                      Sweeping complete. Check your balance and your tokens.
+                      Sweeping complete. Check your balance and your tokens.<br />
+                      If you have multiple types of tokens on the paper wallet, you'll need to scan it again.
                     </h3>
                     <p className="mt-2">
                       Transaction ID :
