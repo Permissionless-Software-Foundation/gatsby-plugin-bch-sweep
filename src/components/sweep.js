@@ -52,6 +52,11 @@ class Sweep extends Component {
             isSweeping: false,
             txId: result
           })
+
+          setTimeout( async () => {          
+            const tokens = await _this.props.bchWallet.listTokens()
+            _this.props.setTokensInfo(tokens)
+          }, 3000)
         } catch (error) {
           _this.setState({
             success: false,
@@ -243,7 +248,9 @@ class Sweep extends Component {
 
 Sweep.propTypes = {
   onError: PropTypes.func,
-  onScan: PropTypes.func
+  onScan: PropTypes.func, 
+  bchWallet: PropTypes.object, // get minimal-slp-wallet instance
+  setTokensInfo: PropTypes.func.isRequired
 }
 
 export default Sweep
