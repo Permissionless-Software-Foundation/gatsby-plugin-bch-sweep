@@ -2,13 +2,16 @@
 
 import React, { Component } from 'react'
 import PropTypes from 'prop-types'
-import { Content, Row, Col, Box, Button } from 'adminlte-2-react'
+import { Content, Row, Col, Box, Button, Inputs } from 'adminlte-2-react'
 import 'gatsby-ipfs-web-wallet/src/components/qr-scanner/qr-scanner.css'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import QrReader from 'react-qr-reader'
 import { getWalletInfo } from 'gatsby-ipfs-web-wallet/src/components/localWallet'
-
+import SweepScanner from './sweep-scanner'
 import './sweep.css'
+
+
+const { Text } = Inputs
 let _this
 
 class Sweep extends Component {
@@ -17,60 +20,14 @@ class Sweep extends Component {
     _this = this
 
     this.state = {
+      WIF: '',
       success: false,
-      facingMode: 'environment',
       isSweeping: false,
       txId: '',
-      errMsg: ''
+      errMsg: '',
+      showScanner: false
     }
 
-    // The library QrReader calls to the scan function constantly,
-    // sending null as a parameter if it does not read anything,
-    // so it's advisable to insert code inside a validation
-
-    /* TODO: Integrate with npm library to sweep tokens */
-    this.handleScan = async data => {
-      if (data) {
-        try {
-          console.log(`Scanned data : ${data}`)
-
-          // Validate Input
-          const isWIF = _this.validateWIF(data)
-          if (!isWIF) {
-            throw new Error('Not a WIF key')
-          }
-
-          _this.setState({ isSweeping: true })
-
-          // Sweep start!
-          const result = await _this.handleSweep(data)
-
-          if (!result) throw new Error('Error making the sweep')
-
-          _this.setState({
-            success: true,
-            isSweeping: false,
-            txId: result
-          })
-
-          setTimeout( async () => {          
-            const tokens = await _this.props.bchWallet.listTokens()
-            _this.props.setTokensInfo(tokens)
-          }, 3000)
-        } catch (error) {
-          _this.setState({
-            success: false,
-            isSweeping: false,
-            errMsg: error.message
-          })
-        }
-      }
-    }
-
-    this.handleError = err => {
-      console.error(err)
-      _this.props.onError ? _this.props.onError(err) : console.error(err)
-    }
   }
 
   render() {
@@ -87,7 +44,7 @@ class Sweep extends Component {
                     <div>
                       <Row>
                         <Col sm={12} className="text-center">
-                          <h1>
+                          <h1 className="mb-1">
                             <FontAwesomeIcon
                               className="title-icon"
                               size="xs"
@@ -95,11 +52,25 @@ class Sweep extends Component {
                             />
                             <span>Sweep Wallet</span>
                           </h1>
-                          <QrReader
-                            delay={300}
-                            onError={_this.handleError}
-                            onScan={_this.handleScan}
-                            facingMode={_this.state.facingMode}
+                          <Text
+                            id='WIF'
+                            name='WIF'
+                            placeholder='Enter a private key'
+                            label='Private Key'
+                            labelPosition='above'
+                            onChange={_this.handleUpdate}
+                            className='title-icon'
+                            buttonRight={
+                              <Button
+                                icon='fa-qrcode'
+                                onClick={_this.handleModal}
+                              />
+                            }
+                          />
+                          <Button
+                            className="btn-primary"
+                            text="Sweep"
+                            onClick={() => _this.sweep(_this.state.WIF)}
                           />
                           <b>
                             <p className="qr-result">{_this.state.success}</p>
@@ -119,7 +90,7 @@ class Sweep extends Component {
                       <a
                         href={`https://explorer.bitcoin.com/bch/tx/${
                           _this.state.txId
-                        }`}
+                          }`}
                         target="_blank"
                         rel="noopener noreferrer"
                       >
@@ -159,19 +130,65 @@ class Sweep extends Component {
             <Col sm={3} />
           </Row>
         </Content>
+        <SweepScanner
+          onScan={_this.sweep}
+          handleOnHide={_this.handleModal}
+          show={_this.state.showScanner}
+        />
       </>
     )
   }
 
-  handleChangeMode() {
-    const mode = _this.state.facingMode === 'user' ? 'environment' : 'user'
+  handleModal() {
     _this.setState({
-      facingMode: mode
+      showScanner: !_this.state.showScanner
+    })
+  }
+  handleUpdate(event) {
+    const value = event.target.value
+    _this.setState({
+      [event.target.name]: value
     })
   }
 
+  async sweep(data) {
+    try {
+
+      const isWIF = _this.validateWIF(data)
+      if (!isWIF) {
+        throw new Error('Not a WIF key')
+      }
+      _this.setState({
+        showScanner: false,
+        isSweeping: true
+      })
+
+      // Sweep start!
+      const result = await _this.handleSweep(data)
+
+      if (!result) throw new Error('Error making the sweep')
+
+      _this.setState({
+        success: true,
+        isSweeping: false,
+        txId: result
+      })
+
+      setTimeout(async () => {
+        const tokens = await _this.props.bchWallet.listTokens()
+        _this.props.setTokensInfo(tokens)
+      }, 3000)
+    } catch (error) {
+      _this.setState({
+        success: false,
+        isSweeping: false,
+        errMsg: error.message
+      })
+    }
+  }
   async handleSweep(paperWIF) {
     try {
+
       // Get Wallet Info
       const walletInfo = getWalletInfo()
       const slpAddress = walletInfo.slpAddress
@@ -213,11 +230,6 @@ class Sweep extends Component {
     }
   }
 
-  uniq(a) {
-    return a.sort().filter(function(item, pos, ary) {
-      return !pos || item !== ary[pos - 1]
-    })
-  }
 
   handleResetState() {
     _this.setState({
@@ -228,6 +240,7 @@ class Sweep extends Component {
       errMsg: ''
     })
   }
+
 
   validateWIF(WIF) {
     if (typeof WIF !== 'string') {
@@ -248,9 +261,9 @@ class Sweep extends Component {
 
 Sweep.propTypes = {
   onError: PropTypes.func,
-  onScan: PropTypes.func, 
+  onScan: PropTypes.func,
   bchWallet: PropTypes.object, // get minimal-slp-wallet instance
-  setTokensInfo: PropTypes.func.isRequired
+  setTokensInfo: PropTypes.func
 }
 
 export default Sweep
