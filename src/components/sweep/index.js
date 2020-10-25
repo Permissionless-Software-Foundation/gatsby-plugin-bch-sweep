@@ -186,6 +186,7 @@ class Sweep extends Component {
     }
   }
 
+  // Handle the sweeping of the paper wallet.
   async handleSweep(paperWIF) {
     try {
       // Get Wallet Info
