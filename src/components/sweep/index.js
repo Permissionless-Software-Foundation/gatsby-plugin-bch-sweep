@@ -10,7 +10,6 @@ import { getWalletInfo } from 'gatsby-ipfs-web-wallet/src/components/localWallet
 import SweepScanner from './sweep-scanner'
 import './sweep.css'
 
-
 const { Text } = Inputs
 let _this
 
@@ -27,7 +26,6 @@ class Sweep extends Component {
       errMsg: '',
       showScanner: false
     }
-
   }
 
   render() {
@@ -53,16 +51,16 @@ class Sweep extends Component {
                             <span>Sweep Wallet</span>
                           </h1>
                           <Text
-                            id='WIF'
-                            name='WIF'
-                            placeholder='Enter a private key'
-                            label='Private Key'
-                            labelPosition='above'
+                            id="WIF"
+                            name="WIF"
+                            placeholder="Enter a private key"
+                            label="Private Key"
+                            labelPosition="above"
                             onChange={_this.handleUpdate}
-                            className='title-icon'
+                            className="title-icon"
                             buttonRight={
                               <Button
-                                icon='fa-qrcode'
+                                icon="fa-qrcode"
                                 onClick={_this.handleModal}
                               />
                             }
@@ -82,15 +80,17 @@ class Sweep extends Component {
                 {_this.state.success && (
                   <div className="text-center">
                     <h3>
-                      Sweeping complete. Check your balance and your tokens.<br />
-                      If you have multiple types of tokens on the paper wallet, you'll need to scan it again.
+                      Sweeping complete. Check your balance and your tokens.
+                      <br />
+                      If you have multiple types of tokens on the paper wallet,
+                      you'll need to scan it again.
                     </h3>
                     <p className="mt-2">
                       Transaction ID :
                       <a
                         href={`https://explorer.bitcoin.com/bch/tx/${
                           _this.state.txId
-                          }`}
+                        }`}
                         target="_blank"
                         rel="noopener noreferrer"
                       >
@@ -153,7 +153,6 @@ class Sweep extends Component {
 
   async sweep(data) {
     try {
-
       const isWIF = _this.validateWIF(data)
       if (!isWIF) {
         throw new Error('Not a WIF key')
@@ -186,9 +185,10 @@ class Sweep extends Component {
       })
     }
   }
+
+  // Handle the sweeping of the paper wallet.
   async handleSweep(paperWIF) {
     try {
-
       // Get Wallet Info
       const walletInfo = getWalletInfo()
       const slpAddress = walletInfo.slpAddress
@@ -204,8 +204,11 @@ class Sweep extends Component {
       const SweeperLib = typeof window !== 'undefined' ? window.Sweep : null
       if (!SweeperLib) throw new Error('Sweeper Library not found')
 
+      // Get a handle on the instance of bch-js being used by gatsby-ipfs-web-wallet.
+      const bchjs = _this.props.bchWallet.bchjs
+
       // Instancing the library
-      const sweeperLib = new SweeperLib(paperWIF, WIFFromReceiver)
+      const sweeperLib = new SweeperLib(paperWIF, WIFFromReceiver, bchjs)
       await sweeperLib.populateObjectFromNetwork()
 
       // console.log(
@@ -230,7 +233,6 @@ class Sweep extends Component {
     }
   }
 
-
   handleResetState() {
     _this.setState({
       success: false,
@@ -240,7 +242,6 @@ class Sweep extends Component {
       errMsg: ''
     })
   }
-
 
   validateWIF(WIF) {
     if (typeof WIF !== 'string') {
