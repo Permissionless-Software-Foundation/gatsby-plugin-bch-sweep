@@ -188,11 +188,8 @@ class Sweep extends Component {
 
   async handleSweep(paperWIF) {
     try {
-      console.log('_this.props.bchWallet: ', _this.props.bchWallet)
-
       // Get Wallet Info
       const walletInfo = getWalletInfo()
-      console.log('walletInfo: ', walletInfo)
       const slpAddress = walletInfo.slpAddress
       const WIFFromReceiver = walletInfo.privateKey
 
@@ -202,14 +199,15 @@ class Sweep extends Component {
         )
       }
 
-      // const BchWallet = typeof window !== 'undefined' ? window.SlpWallet : null
-
       // Importing library
       const SweeperLib = typeof window !== 'undefined' ? window.Sweep : null
       if (!SweeperLib) throw new Error('Sweeper Library not found')
 
+      // Get a handle on the instance of bch-js being used by gatsby-ipfs-web-wallet.
+      const bchjs = _this.props.bchWallet.bchjs
+
       // Instancing the library
-      const sweeperLib = new SweeperLib(paperWIF, WIFFromReceiver)
+      const sweeperLib = new SweeperLib(paperWIF, WIFFromReceiver, bchjs)
       await sweeperLib.populateObjectFromNetwork()
 
       // console.log(
