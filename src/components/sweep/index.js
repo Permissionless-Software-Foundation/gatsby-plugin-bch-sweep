@@ -186,11 +186,13 @@ class Sweep extends Component {
       })
     }
   }
+
   async handleSweep(paperWIF) {
     try {
 
       // Get Wallet Info
       const walletInfo = getWalletInfo()
+      console.log('walletInfo: ', walletInfo)
       const slpAddress = walletInfo.slpAddress
       const WIFFromReceiver = walletInfo.privateKey
 
