@@ -176,6 +176,7 @@ class Sweep extends Component {
       setTimeout(async () => {
         const tokens = await _this.props.bchWallet.listTokens()
         _this.props.setTokensInfo(tokens)
+        _this.handleUpdateBalance()
       }, 3000)
     } catch (error) {
       _this.setState({
@@ -243,6 +244,24 @@ class Sweep extends Component {
     })
   }
 
+  async handleUpdateBalance() { 
+    try {
+      const { mnemonic } = _this.props.walletInfo
+      if (mnemonic && _this.props.bchWallet) {
+        const bchWalletLib = _this.props.bchWallet
+        await bchWalletLib.walletInfoPromise
+        const myBalance = await bchWalletLib.getBalance()
+
+        const bchjs = bchWalletLib.bchjs
+        const currentRate = await bchjs.Price.getUsd() * 100
+
+        _this.props.updateBalance({ myBalance, currentRate })
+      }
+    } catch (error) {
+      console.error(error)
+    }
+  }
+
   validateWIF(WIF) {
     if (typeof WIF !== 'string') {
       return false
@@ -264,7 +283,9 @@ Sweep.propTypes = {
   onError: PropTypes.func,
   onScan: PropTypes.func,
   bchWallet: PropTypes.object, // get minimal-slp-wallet instance
-  setTokensInfo: PropTypes.func
+  setTokensInfo: PropTypes.func, 
+  walletInfo: PropTypes.object.isRequired, 
+  updateBalance: PropTypes.func.isRequired, // update BCH balance
 }
 
 export default Sweep
