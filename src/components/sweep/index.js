@@ -66,7 +66,7 @@ class Sweep extends Component {
                             }
                           />
                           <Button
-                            className="btn-primary"
+                            className="btn-primary btn-sweep"
                             text="Sweep"
                             onClick={() => _this.sweep(_this.state.WIF)}
                           />
