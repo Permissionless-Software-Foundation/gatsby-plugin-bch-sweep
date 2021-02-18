@@ -88,9 +88,7 @@ class Sweep extends Component {
                     <p className="mt-2">
                       Transaction ID :
                       <a
-                        href={`https://explorer.bitcoin.com/bch/tx/${
-                          _this.state.txId
-                        }`}
+                        href={`https://explorer.bitcoin.com/bch/tx/${_this.state.txId}`}
                         target="_blank"
                         rel="noopener noreferrer"
                       >
@@ -182,7 +180,8 @@ class Sweep extends Component {
       _this.setState({
         success: false,
         isSweeping: false,
-        errMsg: error.message
+        errMsg: error.message,
+        showScanner: false
       })
     }
   }
@@ -244,7 +243,7 @@ class Sweep extends Component {
     })
   }
 
-  async handleUpdateBalance() { 
+  async handleUpdateBalance() {
     try {
       const { mnemonic } = _this.props.walletInfo
       if (mnemonic && _this.props.bchWallet) {
@@ -253,7 +252,7 @@ class Sweep extends Component {
         const myBalance = await bchWalletLib.getBalance()
 
         const bchjs = bchWalletLib.bchjs
-        const currentRate = await bchjs.Price.getUsd() * 100
+        const currentRate = (await bchjs.Price.getUsd()) * 100
 
         _this.props.updateBalance({ myBalance, currentRate })
       }
@@ -283,9 +282,9 @@ Sweep.propTypes = {
   onError: PropTypes.func,
   onScan: PropTypes.func,
   bchWallet: PropTypes.object, // get minimal-slp-wallet instance
-  setTokensInfo: PropTypes.func, 
-  walletInfo: PropTypes.object.isRequired, 
-  updateBalance: PropTypes.func.isRequired, // update BCH balance
+  setTokensInfo: PropTypes.func,
+  walletInfo: PropTypes.object.isRequired,
+  updateBalance: PropTypes.func.isRequired // update BCH balance
 }
 
 export default Sweep
