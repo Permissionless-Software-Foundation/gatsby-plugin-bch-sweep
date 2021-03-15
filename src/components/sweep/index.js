@@ -24,7 +24,8 @@ class Sweep extends Component {
       isSweeping: false,
       txId: '',
       errMsg: '',
-      showScanner: false
+      showScanner: false,
+      explorerURL
     }
   }
 
@@ -88,7 +89,7 @@ class Sweep extends Component {
                     <p className="mt-2">
                       Transaction ID :
                       <a
-                        href={`https://explorer.bitcoin.com/bch/tx/${_this.state.txId}`}
+                        href={`${_this.state.explorerURL}/${_this.state.txId}`}
                         target="_blank"
                         rel="noopener noreferrer"
                       >
@@ -135,6 +136,11 @@ class Sweep extends Component {
         />
       </>
     )
+  }
+  componentDidMount () {
+  // Define the explorer to use
+  // depending on the selected chain
+    _this.defineExplorer()
   }
 
   handleModal() {
@@ -275,6 +281,27 @@ class Sweep extends Component {
     }
 
     return true
+  }
+  // Define the explorer to use
+  // depending on the selected chain
+  defineExplorer() {
+    try {
+      const bchWalletLib = _this.props.bchWallet
+      const bchjs = bchWalletLib.bchjs
+
+      let explorerURL
+
+      if (bchjs.restURL.includes('abc.fullstack')) {
+        explorerURL = 'https://explorer.bitcoinabc.org/tx'
+      } else {
+        explorerURL = 'https://explorer.bitcoin.com/bch/tx'
+      }
+      _this.setState({
+        explorerURL
+      })
+    } catch (error) {
+      console.warn(error)
+    }
   }
 }
 
