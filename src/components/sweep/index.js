@@ -1,14 +1,14 @@
 /* eslint-disable */
 
-import React, { Component } from 'react'
-import PropTypes from 'prop-types'
-import { Content, Row, Col, Box, Button, Inputs } from 'adminlte-2-react'
-import 'gatsby-ipfs-web-wallet/src/components/qr-scanner/qr-scanner.css'
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import QrReader from 'react-qr-reader'
-import { getWalletInfo } from 'gatsby-ipfs-web-wallet/src/components/localWallet'
-import SweepScanner from './sweep-scanner'
-import './sweep.css'
+import React, { Component } from "react"
+import PropTypes from "prop-types"
+import { Content, Row, Col, Box, Button, Inputs } from "adminlte-2-react"
+import "gatsby-ipfs-web-wallet/src/components/qr-scanner/qr-scanner.css"
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
+import QrReader from "react-qr-reader"
+import { getWalletInfo } from "gatsby-ipfs-web-wallet/src/components/localWallet"
+import SweepScanner from "./sweep-scanner"
+import "./sweep.css"
 
 const { Text } = Inputs
 let _this
@@ -19,12 +19,13 @@ class Sweep extends Component {
     _this = this
 
     this.state = {
-      WIF: '',
+      WIF: "",
       success: false,
       isSweeping: false,
-      txId: '',
-      errMsg: '',
-      showScanner: false
+      txId: "",
+      errMsg: "",
+      showScanner: false,
+      explorerURL: "",
     }
   }
 
@@ -88,11 +89,11 @@ class Sweep extends Component {
                     <p className="mt-2">
                       Transaction ID :
                       <a
-                        href={`https://explorer.bitcoin.com/bch/tx/${_this.state.txId}`}
+                        href={`${_this.state.explorerURL}/${_this.state.txId}`}
                         target="_blank"
                         rel="noopener noreferrer"
                       >
-                        {' '}
+                        {" "}
                         {_this.state.txId}
                       </a>
                     </p>
@@ -100,7 +101,7 @@ class Sweep extends Component {
                     <Button
                       text="Back"
                       className="btn-primary mt-2"
-                      style={{ color: 'white' }}
+                      style={{ color: "white" }}
                       onClick={_this.handleResetState}
                     />
                   </div>
@@ -136,16 +137,21 @@ class Sweep extends Component {
       </>
     )
   }
+  componentDidMount() {
+    // Define the explorer to use
+    // depending on the selected chain
+    _this.defineExplorer()
+  }
 
   handleModal() {
     _this.setState({
-      showScanner: !_this.state.showScanner
+      showScanner: !_this.state.showScanner,
     })
   }
   handleUpdate(event) {
     const value = event.target.value
     _this.setState({
-      [event.target.name]: value
+      [event.target.name]: value,
     })
   }
 
@@ -153,22 +159,22 @@ class Sweep extends Component {
     try {
       const isWIF = _this.validateWIF(data)
       if (!isWIF) {
-        throw new Error('Not a WIF key')
+        throw new Error("Not a WIF key")
       }
       _this.setState({
         showScanner: false,
-        isSweeping: true
+        isSweeping: true,
       })
 
       // Sweep start!
       const result = await _this.handleSweep(data)
 
-      if (!result) throw new Error('Error making the sweep')
+      if (!result) throw new Error("Error making the sweep")
 
       _this.setState({
         success: true,
         isSweeping: false,
-        txId: result
+        txId: result,
       })
 
       setTimeout(async () => {
@@ -181,7 +187,7 @@ class Sweep extends Component {
         success: false,
         isSweeping: false,
         errMsg: error.message,
-        showScanner: false
+        showScanner: false,
       })
     }
   }
@@ -196,13 +202,13 @@ class Sweep extends Component {
 
       if (!slpAddress || !WIFFromReceiver) {
         throw new Error(
-          'You need to have a registered wallet to make a token sweep'
+          "You need to have a registered wallet to make a token sweep"
         )
       }
 
       // Importing library
-      const SweeperLib = typeof window !== 'undefined' ? window.Sweep : null
-      if (!SweeperLib) throw new Error('Sweeper Library not found')
+      const SweeperLib = typeof window !== "undefined" ? window.Sweep : null
+      if (!SweeperLib) throw new Error("Sweeper Library not found")
 
       // Get a handle on the instance of bch-js being used by gatsby-ipfs-web-wallet.
       const bchjs = _this.props.bchWallet.bchjs
@@ -236,10 +242,10 @@ class Sweep extends Component {
   handleResetState() {
     _this.setState({
       success: false,
-      facingMode: 'environment',
+      facingMode: "environment",
       isSweeping: false,
-      txId: '',
-      errMsg: ''
+      txId: "",
+      errMsg: "",
     })
   }
 
@@ -262,7 +268,7 @@ class Sweep extends Component {
   }
 
   validateWIF(WIF) {
-    if (typeof WIF !== 'string') {
+    if (typeof WIF !== "string") {
       return false
     }
 
@@ -270,11 +276,32 @@ class Sweep extends Component {
       return false
     }
 
-    if (WIF[0] !== 'L' && WIF[0] !== 'K') {
+    if (WIF[0] !== "L" && WIF[0] !== "K") {
       return false
     }
 
     return true
+  }
+  // Define the explorer to use
+  // depending on the selected chain
+  defineExplorer() {
+    try {
+      const bchWalletLib = _this.props.bchWallet
+      const bchjs = bchWalletLib.bchjs
+
+      let explorerURL
+
+      if (bchjs.restURL.includes("abc.fullstack")) {
+        explorerURL = "https://explorer.bitcoinabc.org/tx"
+      } else {
+        explorerURL = "https://explorer.bitcoin.com/bch/tx"
+      }
+      _this.setState({
+        explorerURL,
+      })
+    } catch (error) {
+      console.warn(error)
+    }
   }
 }
 
@@ -284,7 +311,7 @@ Sweep.propTypes = {
   bchWallet: PropTypes.object, // get minimal-slp-wallet instance
   setTokensInfo: PropTypes.func,
   walletInfo: PropTypes.object.isRequired,
-  updateBalance: PropTypes.func.isRequired // update BCH balance
+  updateBalance: PropTypes.func.isRequired, // update BCH balance
 }
 
 export default Sweep
