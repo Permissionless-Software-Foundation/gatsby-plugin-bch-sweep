@@ -3,10 +3,10 @@
 import React, { Component } from "react"
 import PropTypes from "prop-types"
 import { Content, Row, Col, Box, Button, Inputs } from "adminlte-2-react"
-import "gatsby-ipfs-web-wallet/src/components/qr-scanner/qr-scanner.css"
+import "gatsby-theme-bch-wallet/src/components/qr-scanner/qr-scanner.css"
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
 import QrReader from "react-qr-reader"
-import { getWalletInfo } from "gatsby-ipfs-web-wallet/src/components/localWallet"
+import { getWalletInfo } from "gatsby-theme-bch-wallet/src/components/localWallet"
 import SweepScanner from "./sweep-scanner"
 import "./sweep.css"
 
@@ -210,7 +210,7 @@ class Sweep extends Component {
       const SweeperLib = typeof window !== "undefined" ? window.Sweep : null
       if (!SweeperLib) throw new Error("Sweeper Library not found")
 
-      // Get a handle on the instance of bch-js being used by gatsby-ipfs-web-wallet.
+      // Get a handle on the instance of bch-js being used by gatsby-theme-bch-wallet.
       const bchjs = _this.props.bchWallet.bchjs
 
       // Instancing the library
