@@ -3,10 +3,10 @@
 import React, { Component } from 'react'
 import PropTypes from 'prop-types'
 import { Content, Row, Col, Box, Button } from 'adminlte-2-react'
-import 'gatsby-theme-bch-wallet/src/components/qr-scanner/qr-scanner.css'
+import 'fullstack-gatsby-theme-bch-wallet/src/components/qr-scanner/qr-scanner.css'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import QrReader from 'react-qr-reader'
-// import { getWalletInfo } from 'gatsby-theme-bch-wallet/src/components/localWallet'
+// import { getWalletInfo } from 'fullstack-gatsby-theme-bch-wallet/src/components/localWallet'
 
 import './sweep.css'
 let _this
